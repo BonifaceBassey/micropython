@@ -8,6 +8,7 @@
 #include "py/repl.h"
 #include "py/gc.h"
 #include "lib/utils/pyexec.h"
+#include "board.h"
 
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
@@ -33,6 +34,9 @@ static char *stack_top;
 static char heap[2048];
 
 int main(int argc, char **argv) {
+    // init the peripherals
+    uart_init();
+
     int stack_dummy;
     stack_top = (char*)&stack_dummy;
 
@@ -95,7 +99,4 @@ void MP_WEAK __assert_func(const char *file, int line, const char *func, const c
 #endif
 
 
-void EUSCIA0_IRQHandler(void)
-{
-}
 

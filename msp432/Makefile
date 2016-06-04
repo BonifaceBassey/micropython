@@ -43,7 +43,8 @@ LIBS =
 SRC_C = startup_msp432p401r_${COMPILER}.c \
 	system_msp432p401r.c \
 	main.c \
-	uart_core.c \
+	board.c \
+        uart_core.c \
 	uart_extra.c \
 	lib/utils/printf.c \
 	lib/utils/pyexec.c \
