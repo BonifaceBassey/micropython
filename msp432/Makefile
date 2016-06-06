@@ -44,8 +44,7 @@ SRC_C = startup_msp432p401r_${COMPILER}.c \
 	system_msp432p401r.c \
 	main.c \
 	board.c \
-        uart_core.c \
-	uart_extra.c \
+        msp432_mphal.c \
 	lib/utils/printf.c \
 	lib/utils/pyexec.c \
 	lib/libc/string0.c \

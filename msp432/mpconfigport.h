@@ -75,11 +75,16 @@ extern const struct _mp_obj_fun_builtin_t mp_builtin_open_obj;
 #define MICROPY_PORT_BUILTINS \
     { MP_OBJ_NEW_QSTR(MP_QSTR_open), (mp_obj_t)&mp_builtin_open_obj },
 
+
 // We need to provide a declaration/definition of alloca()
 #include <alloca.h>
 
+//#define MICROPY_MPHALPORT_H "msp432_mphal.h"
+//#define MICROPY_HW_BOARD_NAME "MSP432_LaunchPad"
+//#define MICROPY_HW_MCU_NAME "MSP432P401R"
+
 #define MICROPY_HW_BOARD_NAME "minimal"
-#define MICROPY_HW_MCU_NAME "unknown-cpu"
+#define MICROPY_HW_MCU_NAME "unknown_cpu"
 
 #ifdef __linux__
 #define MICROPY_MIN_USE_STDOUT (1)
@@ -94,4 +99,4 @@ extern const struct _mp_obj_fun_builtin_t mp_builtin_open_obj;
 #define MP_STATE_PORT MP_STATE_VM
 
 #define MICROPY_PORT_ROOT_POINTERS \
-    const char *readline_hist[8];
+    const char *readline_hist[8]; 

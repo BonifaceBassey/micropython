@@ -12,7 +12,7 @@
 //UART
 
 #if MICROPY_MIN_USE_MSP432_MCU
-int receiveData = 0;
+unsigned char receiveData = 0;
 
 const eUSCI_UART_Config uartConfig =
 {
@@ -62,7 +62,7 @@ void uart_init(void)
 }
 
 // Send string of given length
-void uart_tx(int chr)
+void uart_tx_char(int chr)
 {
     //while(!(IFG2 & UCA0TXIFG)); 	// Wait until TXREG is empty, handled by UART_transmitData()
     UART_transmitData(EUSCI_A0_BASE, chr);
@@ -76,7 +76,7 @@ int uart_rx_data(void)
 }
 
 /*
-// Send character
+// character
 int uart_rx_char(void)
 {
 // interrupt flag IFG2[UCA0RXIFG] checks if a char is recieved, then reads char from UCA0RXBUF
