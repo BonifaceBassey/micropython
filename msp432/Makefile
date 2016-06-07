@@ -68,8 +68,8 @@ endif
 #
 # The rule to clean out all the build products.
 #
-clean:
-	@rm -rf ${BUILD} ${wildcard *~}
+#clean:
+#	@rm -rf ${BUILD} ${wildcard *~}
 
 #
 # The rule to create the target directory.
