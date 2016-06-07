@@ -58,7 +58,6 @@ CFLAGS=-mthumb             \
        ${FPU}              \
        -ffunction-sections \
        -fdata-sections     \
-       -MD                 \
        -std=gnu99            \
        -Dgcc               \
        -D${DEVICE}           \
