@@ -12,7 +12,7 @@ include ../py/py.mk
 DEVICE=__MSP432P401R__
 
 # The base directory for MSPWare.
-ROOT=drivers/
+ROOT=drivers
 
 # The compiler to be used.
 ifndef CROSS
@@ -105,5 +105,6 @@ ifneq (${MAKECMDGOALS},clean)
 endif
 
 include ../py/mkrules.mk
+
 
 
