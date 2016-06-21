@@ -34,6 +34,7 @@
 #define MICROPY_PY_BUILTINS_SLICE   (0)
 #define MICROPY_PY_BUILTINS_PROPERTY (0)
 #define MICROPY_PY_BUILTINS_MIN_MAX (0)
+//#define MICROPY_PY_MICROPYTHON_MEM_INFO (1)
 #define MICROPY_PY___FILE__         (0)
 #define MICROPY_PY_GC               (0)
 #define MICROPY_PY_ARRAY            (0)
@@ -75,16 +76,20 @@ extern const struct _mp_obj_fun_builtin_t mp_builtin_open_obj;
 #define MICROPY_PORT_BUILTINS \
     { MP_OBJ_NEW_QSTR(MP_QSTR_open), (mp_obj_t)&mp_builtin_open_obj },
 
+#define MP_STATE_PORT MP_STATE_VM
+
+#define MICROPY_PORT_ROOT_POINTERS \
+    const char *readline_hist[8]; \
+    mp_obj_t keyboard_interrupt_obj; \
+
+//#define MICROPY_MPHALPORT_H "msp432_mphal.h"
+//#define MICROPY_HW_BOARD_NAME "minimal"
+//#define MICROPY_HW_MCU_NAME "unknown_cpu"
+#define MICROPY_HW_BOARD_NAME "MSP432_LaunchPad"
+#define MICROPY_HW_MCU_NAME "MSP432P401R"
 
 // We need to provide a declaration/definition of alloca()
 #include <alloca.h>
-
-//#define MICROPY_MPHALPORT_H "msp432_mphal.h"
-//#define MICROPY_HW_BOARD_NAME "MSP432_LaunchPad"
-//#define MICROPY_HW_MCU_NAME "MSP432P401R"
-
-#define MICROPY_HW_BOARD_NAME "minimal"
-#define MICROPY_HW_MCU_NAME "unknown_cpu"
 
 #ifdef __linux__
 #define MICROPY_MIN_USE_STDOUT (1)
@@ -96,7 +101,4 @@ extern const struct _mp_obj_fun_builtin_t mp_builtin_open_obj;
 #define MICROPY_MIN_USE_MSP432_MCU (1)
 #endif
 
-#define MP_STATE_PORT MP_STATE_VM
 
-#define MICROPY_PORT_ROOT_POINTERS \
-    const char *readline_hist[8]; 

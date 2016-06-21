@@ -2,14 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "py/nlr.h"
+//#include "py/nlr.h"
 #include "py/compile.h"
 #include "py/runtime.h"
 #include "py/repl.h"
 #include "py/gc.h"
+#include "py/mphal.h"
 #include "lib/utils/pyexec.h"
+#include "readline.h"
 #include "board.h"
-
+/*
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
     if (lex == NULL) {
@@ -29,36 +31,53 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
         mp_obj_print_exception(&mp_plat_print, (mp_obj_t)nlr.ret_val);
     }
 }
-
+*/
 static char *stack_top;
-static char heap[2048];
+static char heap[2 * 2048];
 
 int main(int argc, char **argv) {
     // init the peripherals
     uart_init();
-
+    
     int stack_dummy;
+
+soft_reset:
+    //
+    // init MicroPython runtime
+    //
     stack_top = (char*)&stack_dummy;
 
-    #if MICROPY_ENABLE_GC
+    // GC init
     gc_init(heap, heap + sizeof(heap));
-    #endif
+
+    // Micro Python init
     mp_init();
+
+    // create keyboard interrupt object
+    MP_STATE_VM(keyboard_interrupt_obj) = mp_obj_new_exception(&mp_type_KeyboardInterrupt);
+
+    readline_init0();
+
     #if MICROPY_REPL_EVENT_DRIVEN
-    pyexec_event_repl_init();
-    for (;;) {
-        int c = mp_hal_stdin_rx_chr();
-        if (pyexec_event_repl_process_char(c)) {
-            break;
+        pyexec_event_repl_init();
+        for (;;) {
+            int c = mp_hal_stdin_rx_chr();
+            if (pyexec_event_repl_process_char(c)) {
+                break;
+            }
         }
-    }
     #else
-    pyexec_friendly_repl();
+        pyexec_friendly_repl();
     #endif
+
+    printf("PYB: soft reboot\n");
+    mp_deinit();
+    goto soft_reset;
+
     //do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     //do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
-    mp_deinit();
-    return 0;
+	//	mp_deinit();
+	//    	return 0;
 }
 
 void gc_collect(void) {
