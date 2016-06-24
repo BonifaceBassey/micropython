@@ -1,5 +1,3 @@
-
-
 #include <string.h>
 #include <unistd.h>
 #include "py/mphal.h"
@@ -7,7 +5,11 @@
 
 
 int mp_hal_stdin_rx_chr(void) {
-    return uart_rx_data();
+	uint8_t c = 0;
+	do{
+		c = uart_rx_data();	
+	}while(c == 0xFF);
+    return c;
 }
 
 // Send string of given length
