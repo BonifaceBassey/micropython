@@ -36,7 +36,7 @@ const eUSCI_UART_Config uartConfig =
 //Receive byte via USCIA0 interrupt handler.
 void EUSCIA0_IRQHandler(void)
 {
-    receiveData = 0;
+    /*receiveData = 0;
     uint32_t status = MAP_UART_getEnabledInterruptStatus(EUSCI_A0_BASE);
 
     MAP_UART_clearInterruptFlag(EUSCI_A0_BASE, status);
@@ -44,8 +44,8 @@ void EUSCIA0_IRQHandler(void)
     if(status & EUSCI_A_UART_RECEIVE_INTERRUPT)
     {
         receiveData = UART_receiveData(EUSCI_A0_BASE);
-    }
-}
+    }*/
+} 
 
 // init
 void uart_init(void)
@@ -69,9 +69,9 @@ void uart_init(void)
     UART_enableModule(EUSCI_A0_BASE);
 
     /*Enabling UART interrupts */
-    UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
-    Interrupt_enableInterrupt(INT_EUSCIA0);
-    Interrupt_enableSleepOnIsrExit();
+    //UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    //Interrupt_enableInterrupt(INT_EUSCIA0);
+    //Interrupt_enableSleepOnIsrExit();
     Interrupt_enableMaster();
 }
 
@@ -86,10 +86,13 @@ void uart_tx_char(int chr)
 
 // Receive data
 int uart_rx_data(void)
-{   
-    // wait for RXNE --> handled by UART_receiveData(EUSCI_A0_BASE) function
-    return( receiveData );	
-    //return( UART_receiveData(EUSCI_A0_BASE) ); 
+{	
+	int chr = 0xFF;
+	if(UCA0IFG & UCRXIFG0 ){
+		chr = UCA0RXBUF;	
+	}
+	return chr;
+    //return(receiveData);	
 }
 
 #endif
