@@ -13,23 +13,43 @@ Install GCC cross compiler for ARM Cortex-A/R/M processors. On debian 8.4 this w
 
     $ make CROSS=1
 
-## donwload to target
+To remove the built object files
+
+    $ make CROSS=1 clean
+
+
+## Donwload to Target
 
 **under Windows**
-Tool: CCS UniFlash
-The build process generates a **firmware.axf** file in the /output directory.
-This file is used to flash the target with CCS UniFlash.
+* Tool: CCS UniFlash
+* The build process generates a **firmware.axf** file in the /build output directory.
+  This file is used to flash the target with CCS UniFlash.
 
-Open CCS UniFlash. Click on *File-New Configuration*. 
-Next window choose as **Connection**: Texas Instruments XDS110 USB Debug Probe
-and type in by **Board or Device**: MSP432P401R. At least press OK.
+* Open CCS UniFlash. Click on *File-New Configuration*. 
+  Next window choose as **Connection**: Texas Instruments XDS110 USB Debug Probe
+  and type in by **Board or Device**: MSP432P401R. At least press OK.
 
-Now click on the left side at **Programs** and right opened window at the bottom at **add**.
-Now choose the **firmware.axf** and press OK. 
-Last step is to press **program** at the right bottom.
+* Now click on the left side at **Programs** and right opened window at the bottom at **add**.
+  Now choose the **firmware.axf** and press OK. 
+  Last step is to press **program** at the right bottom.
+
+**Under Linux**
+* Download UniFlash for linux and follow the installation instructions from TI's wiki page for your linux machine
+  http://processors.wiki.ti.com/index.php/Linux_Host_Support_CCSv6#Installation_Instructions.
+
+* Download to target is similar to the Windows description above.
 
 ## get REPL
 
-**under Windows**
+**under your Windows**
 First look at device manager for COMport number of device *XDS110 Class Apllication/User UART*
 Open putty, set a serial connection with the COMport device with baudrate 9600 and press OK.
+
+
+**under Linux**
+use any of your favourite serial communication programs like **minicom**, **screen** or **picocom**.
+Locate and connect to your board as Root: for example,
+	
+	$ (root) screen /dev/ttyACM0
+
+
