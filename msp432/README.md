@@ -24,6 +24,7 @@ See using Command Line: before executing this command
     
     $ make CROSS=1 deploy
 
+
 **under Windows**
 * Tool: CCS UniFlash
 * The build process generates a **firmware.axf** file in the /build output directory.
@@ -37,24 +38,24 @@ See using Command Line: before executing this command
   Now choose the **firmware.axf** and press OK. 
   Last step is to press **program** at the right bottom.
 
+
 **Under Linux**
 
   Download UniFlash for linux and follow the installation instructions from [TI's wiki page](http://processors.wiki.ti.com/index.php/Linux_Host_Support_CCSv6#Installation_Instructions.) for your linux machine
   
 
-* using GUI:
+**using GUI:**
 
   Download to target is similar to the Windows description above.
 
-* using Command Line:
+**using Command Line:**
 
-  Install uniflash_3.4 into the msp432 directory (/msp432/uniflash_3.4)
+* Install uniflash_3.4 into the msp432 directory (/msp432/uniflash_3.4)
   
-  Setup new configuration (see "under Windows" above) and save it to the /uniflash_3.4 directory
-  
+* Setup new configuration (see "under Windows" above) and save it to the /uniflash_3.4 directory 
   File -> Save Configuration As -> /uniflash_3.4/msp432_config.ccxml
 
-  Download to target from command line, `make CROSS=1 deploy`
+*  Download to target from command line, `make CROSS=1 deploy`
 
 ## get REPL
 
