@@ -20,7 +20,8 @@ To remove the built object files
 
 ## Donwload to Target
 
-See **using Command Line:** before executing this command
+See using Command Line: before executing this command
+    
     $ make CROSS=1 deploy
 
 **under Windows**
@@ -42,15 +43,18 @@ See **using Command Line:** before executing this command
   
 
 * using GUI:
+
   Download to target is similar to the Windows description above.
 
 * using Command Line:
+
   Install uniflash_3.4 into the msp432 directory (/msp432/uniflash_3.4)
   
   Setup new configuration (see "under Windows" above) and save it to the /uniflash_3.4 directory
+  
   File -> Save Configuration As -> /uniflash_3.4/msp432_config.ccxml
 
-  Download to target from command line, $ make CROSS=1 deploy
+  Download to target from command line, `make CROSS=1 deploy`
 
 ## get REPL
 
