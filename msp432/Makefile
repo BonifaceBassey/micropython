@@ -14,6 +14,9 @@ DEVICE=__MSP432P401R__
 # The base directory for MSPWare.
 ROOT=drivers
 
+#flash tool directory
+UNIFLASH=uniflash_3.4
+
 # The compiler to be used.
 ifndef CROSS
 $(info Please set CROSS compiler, e.g. CROSS=1)
@@ -81,11 +84,6 @@ $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 	$(ECHO) "MISC freezing bytecode"
 	$(Q)../tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
-#$(BUILD)/firmware.elf: $(OBJ)
-#	$(ECHO) "LINK $@"
-#	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
-#	$(Q)$(SIZE) $@
-
 #
 # Rules for building the examples.
 #
@@ -95,6 +93,10 @@ ${BUILD}/firmware.axf: msp432p401r.ld
 SCATTERgcc_firmware=msp432p401r.ld
 ENTRY_firmware=resetISR
 CFLAGSgcc=-DTARGET_IS_MSP432P4XX
+
+deploy:
+	$(ECHO) "Writing $< to the board"
+	${UNIFLASH}/./uniflash.sh -ccxml ${UNIFLASH}/msp432_config.ccxml -program ${BUILD}/firmware.axf
 
 #
 # Include the automatically generated dependency files.
