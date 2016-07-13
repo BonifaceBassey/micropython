@@ -1,7 +1,5 @@
 include ../py/mkenv.mk
 
-#CROSS = 0
-
 # qstr definitions (must come before including py.mk)
 QSTR_DEFS = qstrdefsport.h
 
@@ -65,16 +63,7 @@ all: $(BUILD)/firmware.axf
 else
 all: $(BUILD)/firmware.elf
 endif
-#all: ${COMPILER}
-#all: ${COMPILER}/firmware.axf
 
-#
-# The rule to clean out all the build products.
-#
-#clean:
-#	@rm -rf ${BUILD} ${wildcard *~}
-
-#
 # The rule to create the target directory.
 #
 ${BUILD}:
@@ -84,7 +73,7 @@ $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 	$(ECHO) "MISC freezing bytecode"
 	$(Q)../tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
-#
+
 # Rules for building the examples.
 #
 ${BUILD}/firmware.axf: $(OBJ)
@@ -98,12 +87,11 @@ deploy:
 	$(ECHO) "Writing $< to the board"
 	${UNIFLASH}/./uniflash.sh -ccxml ${UNIFLASH}/msp432_config.ccxml -program ${BUILD}/firmware.axf
 
-#
+
 # Include the automatically generated dependency files.
 #
-
 ifneq (${MAKECMDGOALS},clean)
-#-include ${wildcard ${BUILD}/*.d} __dummy__
+-include ${wildcard ${BUILD}/*.d} __dummy__
 endif
 
 include ../py/mkrules.mk

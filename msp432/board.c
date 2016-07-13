@@ -11,8 +11,6 @@
 //UART
 
 #if MICROPY_MIN_USE_MSP432_MCU
-unsigned char receiveData;
-//bool rxEN = false;
 
 /* UART Configuration Parameter. These are the configuration parameters to
  * make the eUSCI A UART module to operate with a 9600 baud rate, 12MHz clock. These
@@ -36,15 +34,7 @@ const eUSCI_UART_Config uartConfig =
 //Receive byte via USCIA0 interrupt handler.
 void EUSCIA0_IRQHandler(void)
 {
-    /*receiveData = 0;
-    uint32_t status = MAP_UART_getEnabledInterruptStatus(EUSCI_A0_BASE);
 
-    MAP_UART_clearInterruptFlag(EUSCI_A0_BASE, status);
-
-    if(status & EUSCI_A_UART_RECEIVE_INTERRUPT)
-    {
-        receiveData = UART_receiveData(EUSCI_A0_BASE);
-    }*/
 } 
 
 // init
@@ -79,7 +69,6 @@ void uart_init(void)
 void uart_tx_char(int chr)
 {
     // wait for TXE --> handled by UART_transmitData(EUSCI_A0_BASE, transmitData) function
-    //while( !(UCA0IFG & UCTXIFG) );
     UART_transmitData(EUSCI_A0_BASE, chr);
 }
 
@@ -91,8 +80,8 @@ int uart_rx_data(void)
 	if(UCA0IFG & UCRXIFG0 ){
 		chr = UCA0RXBUF;	
 	}
-	return chr;
-    //return(receiveData);	
+	return chr;	
 }
 
 #endif
+

@@ -11,6 +11,9 @@
 #include "lib/utils/pyexec.h"
 #include "readline.h"
 #include "board.h"
+//#include "led.h"
+//#include "modpyb.h"
+
 /*
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
@@ -32,17 +35,19 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     }
 }
 */
+
 static char *stack_top;
 static char heap[2 * 2048];
 
 int main(int argc, char **argv) {
     // init the peripherals
     uart_init();
+    //led_init();
     
     int stack_dummy;
 
 soft_reset:
-    //
+
     // init MicroPython runtime
     //
     stack_top = (char*)&stack_dummy;
@@ -116,6 +121,3 @@ void MP_WEAK __assert_func(const char *file, int line, const char *func, const c
     __fatal_error("Assertion failed");
 }
 #endif
-
-
-
