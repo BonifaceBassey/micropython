@@ -46,6 +46,9 @@ SRC_C = startup_msp432p401r_${COMPILER}.c \
 	main.c \
 	board.c \
         msp432_mphal.c \
+	modpyb.c \
+	led.c	\
+	switch.c	\
 	lib/utils/printf.c \
 	lib/utils/pyexec.c \
 	lib/libc/string0.c \
@@ -53,6 +56,15 @@ SRC_C = startup_msp432p401r_${COMPILER}.c \
 	$(BUILD)/_frozen_mpy.c	\
 		
 OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+
+# List of sources for qstr extraction
+SRC_QSTR += modpyb.c \
+ 	    led.c \
+            switch.c \
+
+# Append any auto-generated sources that are needed by sources listed in
+# SRC_QSTR
+SRC_QSTR_AUTO_DEPS +=
 
 #
 # The default rule, which causes the firmware to be built.

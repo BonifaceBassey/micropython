@@ -11,8 +11,9 @@
 #include "lib/utils/pyexec.h"
 #include "readline.h"
 #include "board.h"
-//#include "led.h"
-//#include "modpyb.h"
+#include "led.h"
+#include "switch.h"
+#include "modpyb.h"
 
 /*
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
@@ -42,7 +43,8 @@ static char heap[2 * 2048];
 int main(int argc, char **argv) {
     // init the peripherals
     uart_init();
-    //led_init();
+    led_init();
+    switch_init();
     
     int stack_dummy;
 
@@ -75,7 +77,7 @@ soft_reset:
         pyexec_friendly_repl();
     #endif
 
-    printf("PYB: soft reboot\n");
+    printf("LaunchPad: soft reboot\n");
     mp_deinit();
     goto soft_reset;
 
