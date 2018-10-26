@@ -1,7 +1,11 @@
 try:
     import urandom as random
 except ImportError:
-    import random
+    try:
+        import random
+    except ImportError:
+        print("SKIP")
+        raise SystemExit
 
 # check getrandbits returns a value within the bit range
 for b in (1, 2, 3, 4, 16, 32):
@@ -17,3 +21,9 @@ random.seed(1)
 r = random.getrandbits(16)
 random.seed(1)
 print(random.getrandbits(16) == r)
+
+# check that it throws an error for zero bits
+try:
+    random.getrandbits(0)
+except ValueError:
+    print('ValueError')

@@ -1,5 +1,5 @@
 /*
- * This file is part of the Micro Python project, http://micropython.org/
+ * This file is part of the MicroPython project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
@@ -27,17 +27,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "py/nlr.h"
 #include "py/obj.h"
-#include "py/runtime0.h"
 
 /******************************************************************************/
 /* slice object                                                               */
 
 #if MICROPY_PY_BUILTINS_SLICE
 
-// TODO: This implements only variant of slice with 2 integer args only.
-// CPython supports 3rd arg (step), plus args can be arbitrary Python objects.
 typedef struct _mp_obj_slice_t {
     mp_obj_base_t base;
     mp_obj_t start;

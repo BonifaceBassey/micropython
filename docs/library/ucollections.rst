@@ -4,19 +4,48 @@
 .. module:: ucollections
    :synopsis: collection and container types
 
+|see_cpython_module| :mod:`python:collections`.
+
 This module implements advanced collection and container types to
 hold/accumulate various objects.
 
 Classes
 -------
 
+.. function:: deque(iterable, maxlen[, flags])
+
+    Deques (double-ended queues) are a list-like container that support O(1)
+    appends and pops from either side of the deque.  New deques are created
+    using the following arguments:
+
+        - *iterable* must be the empty tuple, and the new deque is created empty.
+
+        - *maxlen* must be specified and the deque will be bounded to this
+          maximum length.  Once the deque is full, any new items added will
+          discard items from the opposite end.
+
+        - The optional *flags* can be 1 to check for overflow when adding items.
+
+    As well as supporting `bool` and `len`, deque objects have the following
+    methods:
+
+    .. method:: deque.append(x)
+
+        Add *x* to the right side of the deque.
+        Raises IndexError if overflow checking is enabled and there is no more room left.
+
+    .. method:: deque.popleft()
+
+        Remove and return an item from the left side of the deque.
+        Raises IndexError if no items are present.
+
 .. function:: namedtuple(name, fields)
 
     This is factory function to create a new namedtuple type with a specific
-    name and set of fields. A namedtyple is a subclass of tuple which allows
+    name and set of fields. A namedtuple is a subclass of tuple which allows
     to access its fields not just by numeric index, but also with an attribute
     access syntax using symbolic field names. Fields is a sequence of strings
-    specifying field names. For compatibily with CPython it can also be a
+    specifying field names. For compatibility with CPython it can also be a
     a string with space-separated field named (but this is less efficient).
     Example of use::
 

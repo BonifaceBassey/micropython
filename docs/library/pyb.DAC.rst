@@ -1,3 +1,4 @@
+.. currentmodule:: pyb
 .. _pyb.DAC:
 
 class DAC -- digital to analog conversion
@@ -48,7 +49,7 @@ To output a continuous sine-wave at 12-bit resolution::
 Constructors
 ------------
 
-.. class:: pyb.DAC(port, bits=8)
+.. class:: pyb.DAC(port, bits=8, \*, buffering=None)
 
    Construct a new DAC object.
 
@@ -59,31 +60,50 @@ Constructors
    The maximum value for the write and write_timed methods will be
    2\*\*``bits``-1.
 
+   The *buffering* parameter selects the behaviour of the DAC op-amp output
+   buffer, whose purpose is to reduce the output impedance.  It can be
+   ``None`` to select the default (buffering enabled for :meth:`DAC.noise`,
+   :meth:`DAC.triangle` and :meth:`DAC.write_timed`, and disabled for
+   :meth:`DAC.write`), ``False`` to disable buffering completely, or ``True``
+   to enable output buffering.
+
+   When buffering is enabled the DAC pin can drive loads down to 5KΩ.
+   Otherwise it has an output impedance of 15KΩ maximum: consequently
+   to achieve a 1% accuracy without buffering requires the applied load
+   to be less than 1.5MΩ.  Using the buffer incurs a penalty in accuracy,
+   especially near the extremes of range.
+
 Methods
 -------
 
-.. method:: dac.init(bits=8)
+.. method:: DAC.init(bits=8, \*, buffering=None)
 
-   Reinitialise the DAC.  ``bits`` can be 8 or 12.
+   Reinitialise the DAC.  *bits* can be 8 or 12.  *buffering* can be
+   ``None``, ``False`` or ``True``; see above constructor for the meaning
+   of this parameter.
 
-.. method:: dac.noise(freq)
+.. method:: DAC.deinit()
+
+   De-initialise the DAC making its pin available for other uses.
+
+.. method:: DAC.noise(freq)
 
    Generate a pseudo-random noise signal.  A new random sample is written
    to the DAC output at the given frequency.
 
-.. method:: dac.triangle(freq)
+.. method:: DAC.triangle(freq)
 
    Generate a triangle wave.  The value on the DAC output changes at
-   the given frequency, and the frequence of the repeating triangle wave
+   the given frequency, and the frequency of the repeating triangle wave
    itself is 2048 times smaller.
 
-.. method:: dac.write(value)
+.. method:: DAC.write(value)
 
    Direct access to the DAC output.  The minimum value is 0.  The maximum
    value is 2\*\*``bits``-1, where ``bits`` is set when creating the DAC
    object or by using the ``init`` method.
 
-.. method:: dac.write_timed(data, freq, \*, mode=DAC.NORMAL)
+.. method:: DAC.write_timed(data, freq, \*, mode=DAC.NORMAL)
 
    Initiates a burst of RAM to DAC using a DMA transfer.
    The input data is treated as an array of bytes in 8-bit mode, and

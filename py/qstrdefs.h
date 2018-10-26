@@ -1,5 +1,5 @@
 /*
- * This file is part of the Micro Python project, http://micropython.org/
+ * This file is part of the MicroPython project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
@@ -36,9 +36,16 @@ QCFG(BYTES_IN_HASH, MICROPY_QSTR_BYTES_IN_HASH)
 Q()
 Q(*)
 Q(_)
+Q(/)
+#if MICROPY_PY_BUILTINS_STR_OP_MODULO
 Q(%#o)
 Q(%#x)
+#else
+Q({:#o})
+Q({:#x})
+#endif
 Q({:#b})
+Q( )
 Q(\n)
 Q(maximum recursion depth exceeded)
 Q(<module>)
@@ -51,10 +58,6 @@ Q(<string>)
 Q(<stdin>)
 Q(utf-8)
 
-// The following qstrings not referenced from anywhere in the sources
-Q(__locals__)
-Q(BufferError)
-Q(FileExistsError)
-Q(FileNotFoundError)
-Q(FloatingPointError)
-Q(UnboundLocalError)
+#if MICROPY_ENABLE_PYSTACK
+Q(pystack exhausted)
+#endif

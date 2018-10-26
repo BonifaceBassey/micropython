@@ -1,5 +1,5 @@
 /*
- * This file is part of the Micro Python project, http://micropython.org/
+ * This file is part of the MicroPython project, http://micropython.org/
  *
  * Original template for this file comes from:
  * Low level disk I/O module skeleton for FatFs, (C)ChaN, 2013
@@ -28,7 +28,7 @@
  */
 
 #include "py/mpconfig.h"
-#if MICROPY_FSUSERMOUNT
+#if MICROPY_VFS && MICROPY_VFS_FAT
 
 #include <stdint.h>
 #include <stdio.h>
@@ -36,9 +36,11 @@
 #include "py/mphal.h"
 
 #include "py/runtime.h"
-#include "lib/fatfs/ff.h"        /* FatFs lower layer API */
-#include "lib/fatfs/diskio.h"    /* FatFs lower layer API */
-#include "extmod/fsusermount.h"
+#include "py/binary.h"
+#include "py/objarray.h"
+#include "lib/oofatfs/ff.h"
+#include "lib/oofatfs/diskio.h"
+#include "extmod/vfs_fat.h"
 
 #if _MAX_SS == _MIN_SS
 #define SECSIZE(fs) (_MIN_SS)
@@ -46,63 +48,9 @@
 #define SECSIZE(fs) ((fs)->ssize)
 #endif
 
-STATIC fs_user_mount_t *disk_get_device(uint id) {
-    if (id < MP_ARRAY_SIZE(MP_STATE_PORT(fs_user_mount))) {
-        return MP_STATE_PORT(fs_user_mount)[id];
-    } else {
-        return NULL;
-    }
-}
-
-/*-----------------------------------------------------------------------*/
-/* Initialize a Drive                                                    */
-/*-----------------------------------------------------------------------*/
-
-DSTATUS disk_initialize (
-    BYTE pdrv                /* Physical drive nmuber (0..) */
-)
-{
-    fs_user_mount_t *vfs = disk_get_device(pdrv);
-    if (vfs == NULL) {
-        return STA_NOINIT;
-    }
-
-    if (vfs->flags & FSUSER_HAVE_IOCTL) {
-        // new protocol with ioctl; call ioctl(INIT, 0)
-        vfs->u.ioctl[2] = MP_OBJ_NEW_SMALL_INT(BP_IOCTL_INIT);
-        vfs->u.ioctl[3] = MP_OBJ_NEW_SMALL_INT(0); // unused
-        mp_obj_t ret = mp_call_method_n_kw(2, 0, vfs->u.ioctl);
-        if (ret != mp_const_none && MP_OBJ_SMALL_INT_VALUE(ret) != 0) {
-            // error initialising
-            return STA_NOINIT;
-        }
-    }
-
-    if (vfs->writeblocks[0] == MP_OBJ_NULL) {
-        return STA_PROTECT;
-    } else {
-        return 0;
-    }
-}
-
-/*-----------------------------------------------------------------------*/
-/* Get Disk Status                                                       */
-/*-----------------------------------------------------------------------*/
-
-DSTATUS disk_status (
-    BYTE pdrv        /* Physical drive nmuber (0..) */
-)
-{
-    fs_user_mount_t *vfs = disk_get_device(pdrv);
-    if (vfs == NULL) {
-        return STA_NOINIT;
-    }
-
-    if (vfs->writeblocks[0] == MP_OBJ_NULL) {
-        return STA_PROTECT;
-    } else {
-        return 0;
-    }
+typedef void *bdev_t;
+STATIC fs_user_mount_t *disk_get_device(void *bdev) {
+    return (fs_user_mount_t*)bdev;
 }
 
 /*-----------------------------------------------------------------------*/
@@ -110,7 +58,7 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-    BYTE pdrv,        /* Physical drive nmuber (0..) */
+    bdev_t pdrv,      /* Physical drive nmuber (0..) */
     BYTE *buff,        /* Data buffer to store read data */
     DWORD sector,    /* Sector address (LBA) */
     UINT count        /* Number of sectors to read (1..128) */
@@ -127,8 +75,9 @@ DRESULT disk_read (
             return RES_ERROR;
         }
     } else {
+        mp_obj_array_t ar = {{&mp_type_bytearray}, BYTEARRAY_TYPECODE, 0, count * SECSIZE(&vfs->fatfs), buff};
         vfs->readblocks[2] = MP_OBJ_NEW_SMALL_INT(sector);
-        vfs->readblocks[3] = mp_obj_new_bytearray_by_ref(count * SECSIZE(&vfs->fatfs), buff);
+        vfs->readblocks[3] = MP_OBJ_FROM_PTR(&ar);
         mp_call_method_n_kw(2, 0, vfs->readblocks);
         // TODO handle error return
     }
@@ -140,9 +89,8 @@ DRESULT disk_read (
 /* Write Sector(s)                                                       */
 /*-----------------------------------------------------------------------*/
 
-#if _USE_WRITE
 DRESULT disk_write (
-    BYTE pdrv,            /* Physical drive nmuber (0..) */
+    bdev_t pdrv,          /* Physical drive nmuber (0..) */
     const BYTE *buff,    /* Data to be written */
     DWORD sector,        /* Sector address (LBA) */
     UINT count            /* Number of sectors to write (1..128) */
@@ -164,24 +112,23 @@ DRESULT disk_write (
             return RES_ERROR;
         }
     } else {
+        mp_obj_array_t ar = {{&mp_type_bytearray}, BYTEARRAY_TYPECODE, 0, count * SECSIZE(&vfs->fatfs), (void*)buff};
         vfs->writeblocks[2] = MP_OBJ_NEW_SMALL_INT(sector);
-        vfs->writeblocks[3] = mp_obj_new_bytearray_by_ref(count * SECSIZE(&vfs->fatfs), (void*)buff);
+        vfs->writeblocks[3] = MP_OBJ_FROM_PTR(&ar);
         mp_call_method_n_kw(2, 0, vfs->writeblocks);
         // TODO handle error return
     }
 
     return RES_OK;
 }
-#endif
 
 
 /*-----------------------------------------------------------------------*/
 /* Miscellaneous Functions                                               */
 /*-----------------------------------------------------------------------*/
 
-#if _USE_IOCTL
 DRESULT disk_ioctl (
-    BYTE pdrv,        /* Physical drive nmuber (0..) */
+    bdev_t pdrv,      /* Physical drive nmuber (0..) */
     BYTE cmd,        /* Control code */
     void *buff        /* Buffer to send/receive control data */
 )
@@ -191,42 +138,21 @@ DRESULT disk_ioctl (
         return RES_PARERR;
     }
 
+    // First part: call the relevant method of the underlying block device
+    mp_obj_t ret = mp_const_none;
     if (vfs->flags & FSUSER_HAVE_IOCTL) {
         // new protocol with ioctl
-        switch (cmd) {
-            case CTRL_SYNC:
-                vfs->u.ioctl[2] = MP_OBJ_NEW_SMALL_INT(BP_IOCTL_SYNC);
-                vfs->u.ioctl[3] = MP_OBJ_NEW_SMALL_INT(0); // unused
-                mp_call_method_n_kw(2, 0, vfs->u.ioctl);
-                return RES_OK;
-
-            case GET_SECTOR_COUNT: {
-                vfs->u.ioctl[2] = MP_OBJ_NEW_SMALL_INT(BP_IOCTL_SEC_COUNT);
-                vfs->u.ioctl[3] = MP_OBJ_NEW_SMALL_INT(0); // unused
-                mp_obj_t ret = mp_call_method_n_kw(2, 0, vfs->u.ioctl);
-                *((DWORD*)buff) = mp_obj_get_int(ret);
-                return RES_OK;
-            }
-
-            case GET_SECTOR_SIZE: {
-                vfs->u.ioctl[2] = MP_OBJ_NEW_SMALL_INT(BP_IOCTL_SEC_SIZE);
-                vfs->u.ioctl[3] = MP_OBJ_NEW_SMALL_INT(0); // unused
-                mp_obj_t ret = mp_call_method_n_kw(2, 0, vfs->u.ioctl);
-                if (ret == mp_const_none) {
-                    // Default sector size
-                    *((WORD*)buff) = 512;
-                } else {
-                    *((WORD*)buff) = mp_obj_get_int(ret);
-                }
-                return RES_OK;
-            }
-
-            case GET_BLOCK_SIZE:
-                *((DWORD*)buff) = 1; // erase block size in units of sector size
-                return RES_OK;
-
-            default:
-                return RES_PARERR;
+        static const uint8_t op_map[8] = {
+            [CTRL_SYNC] = BP_IOCTL_SYNC,
+            [GET_SECTOR_COUNT] = BP_IOCTL_SEC_COUNT,
+            [GET_SECTOR_SIZE] = BP_IOCTL_SEC_SIZE,
+            [IOCTL_INIT] = BP_IOCTL_INIT,
+        };
+        uint8_t bp_op = op_map[cmd & 7];
+        if (bp_op != 0) {
+            vfs->u.ioctl[2] = MP_OBJ_NEW_SMALL_INT(bp_op);
+            vfs->u.ioctl[3] = MP_OBJ_NEW_SMALL_INT(0); // unused
+            ret = mp_call_method_n_kw(2, 0, vfs->u.ioctl);
         }
     } else {
         // old protocol with sync and count
@@ -235,27 +161,68 @@ DRESULT disk_ioctl (
                 if (vfs->u.old.sync[0] != MP_OBJ_NULL) {
                     mp_call_method_n_kw(0, 0, vfs->u.old.sync);
                 }
-                return RES_OK;
+                break;
 
-            case GET_SECTOR_COUNT: {
-                mp_obj_t ret = mp_call_method_n_kw(0, 0, vfs->u.old.count);
-                *((DWORD*)buff) = mp_obj_get_int(ret);
-                return RES_OK;
-            }
+            case GET_SECTOR_COUNT:
+                ret = mp_call_method_n_kw(0, 0, vfs->u.old.count);
+                break;
 
             case GET_SECTOR_SIZE:
-                *((WORD*)buff) = 512; // old protocol had fixed sector size
-                return RES_OK;
+                // old protocol has fixed sector size of 512 bytes
+                break;
 
-            case GET_BLOCK_SIZE:
-                *((DWORD*)buff) = 1; // erase block size in units of sector size
-                return RES_OK;
-
-            default:
-                return RES_PARERR;
+            case IOCTL_INIT:
+                // old protocol doesn't have init
+                break;
         }
     }
-}
-#endif
 
-#endif // MICROPY_FSUSERMOUNT
+    // Second part: convert the result for return
+    switch (cmd) {
+        case CTRL_SYNC:
+            return RES_OK;
+
+        case GET_SECTOR_COUNT: {
+            *((DWORD*)buff) = mp_obj_get_int(ret);
+            return RES_OK;
+        }
+
+        case GET_SECTOR_SIZE: {
+            if (ret == mp_const_none) {
+                // Default sector size
+                *((WORD*)buff) = 512;
+            } else {
+                *((WORD*)buff) = mp_obj_get_int(ret);
+            }
+            #if _MAX_SS != _MIN_SS
+            // need to store ssize because we use it in disk_read/disk_write
+            vfs->fatfs.ssize = *((WORD*)buff);
+            #endif
+            return RES_OK;
+        }
+
+        case GET_BLOCK_SIZE:
+            *((DWORD*)buff) = 1; // erase block size in units of sector size
+            return RES_OK;
+
+        case IOCTL_INIT:
+        case IOCTL_STATUS: {
+            DSTATUS stat;
+            if (ret != mp_const_none && MP_OBJ_SMALL_INT_VALUE(ret) != 0) {
+                // error initialising
+                stat = STA_NOINIT;
+            } else if (vfs->writeblocks[0] == MP_OBJ_NULL) {
+                stat = STA_PROTECT;
+            } else {
+                stat = 0;
+            }
+            *((DSTATUS*)buff) = stat;
+            return RES_OK;
+        }
+
+        default:
+            return RES_PARERR;
+    }
+}
+
+#endif // MICROPY_VFS && MICROPY_VFS_FAT

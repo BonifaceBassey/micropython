@@ -32,7 +32,7 @@ ifeq ($(BUILD_VERBOSE),0)
 $(info Use make V=1 or set BUILD_VERBOSE in your environment to increase build verbosity.)
 endif
 
-# default settings; can be overriden in main Makefile
+# default settings; can be overridden in main Makefile
 
 PY_SRC ?= $(TOP)/py
 BUILD ?= build
@@ -57,6 +57,10 @@ CC += -m32
 CXX += -m32
 LD += -m32
 endif
+
+MAKE_FROZEN = $(PYTHON) $(TOP)/tools/make-frozen.py
+MPY_CROSS = $(TOP)/mpy-cross/mpy-cross
+MPY_TOOL = $(PYTHON) $(TOP)/tools/mpy-tool.py
 
 all:
 .PHONY: all

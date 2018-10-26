@@ -1,7 +1,13 @@
+.. currentmodule:: machine
 .. _machine.SD:
 
 class SD -- secure digital memory card
 ======================================
+
+.. warning::
+
+   This is a non-standard class and is only available on the cc3200 port.
+
 
 The SD card class allows to configure and enable the memory card
 module of the WiPy and automatically mount it as ``/sd`` as part
@@ -24,18 +30,18 @@ Example usage::
 Constructors
 ------------
 
-.. class:: machine.SD(id,... )
+.. class:: SD(id,... )
 
    Create a SD card object. See ``init()`` for parameters if initialization. 
 
 Methods
 -------
 
-.. method:: sd.init(id=0, pins=('GP10', 'GP11', 'GP15'))
+.. method:: SD.init(id=0, pins=('GP10', 'GP11', 'GP15'))
 
-   Enable the SD card. In order to initalize the card, give it a 3-tuple:
+   Enable the SD card. In order to initialize the card, give it a 3-tuple:
    ``(clk_pin, cmd_pin, dat0_pin)``.
 
-.. method:: sd.deinit()
+.. method:: SD.deinit()
 
    Disable the SD card.

@@ -29,23 +29,8 @@
 #include "py/runtime.h"
 #include "py/mperrno.h"
 #include "py/mphal.h"
+#include "extmod/machine_pulse.h"
 #include "drivers/dht/dht.h"
-
-STATIC mp_uint_t time_pulse_us(mp_hal_pin_obj_t pin, int pulse_value, mp_uint_t timeout) {
-    mp_uint_t start = mp_hal_ticks_us();
-    while (mp_hal_pin_read(pin) != pulse_value) {
-        if ((mp_uint_t)(mp_hal_ticks_us() - start) >= timeout) {
-            return (mp_uint_t)-1;
-        }
-    }
-    start = mp_hal_ticks_us();
-    while (mp_hal_pin_read(pin) == pulse_value) {
-        if ((mp_uint_t)(mp_hal_ticks_us() - start) >= timeout) {
-            return (mp_uint_t)-1;
-        }
-    }
-    return mp_hal_ticks_us() - start;
-}
 
 STATIC mp_obj_t dht_readinto(mp_obj_t pin_in, mp_obj_t buf_in) {
     mp_hal_pin_obj_t pin = mp_hal_get_pin_obj(pin_in);
@@ -55,7 +40,7 @@ STATIC mp_obj_t dht_readinto(mp_obj_t pin_in, mp_obj_t buf_in) {
     mp_get_buffer_raise(buf_in, &bufinfo, MP_BUFFER_WRITE);
 
     if (bufinfo.len < 5) {
-        nlr_raise(mp_obj_new_exception_msg(&mp_type_ValueError, "buffer too small"));
+        mp_raise_ValueError("buffer too small");
     }
 
     // issue start command
@@ -79,16 +64,16 @@ STATIC mp_obj_t dht_readinto(mp_obj_t pin_in, mp_obj_t buf_in) {
     }
 
     // time pulse, should be 80us
-    ticks = time_pulse_us(pin, 1, 150);
-    if (ticks == (mp_uint_t)-1) {
+    ticks = machine_time_pulse_us(pin, 1, 150);
+    if ((mp_int_t)ticks < 0) {
         goto timeout;
     }
 
     // time 40 pulses for data (either 26us or 70us)
     uint8_t *buf = bufinfo.buf;
     for (int i = 0; i < 40; ++i) {
-        ticks = time_pulse_us(pin, 1, 100);
-        if (ticks == (mp_uint_t)-1) {
+        ticks = machine_time_pulse_us(pin, 1, 100);
+        if ((mp_int_t)ticks < 0) {
             goto timeout;
         }
         buf[i / 8] = (buf[i / 8] << 1) | (ticks > 48);
@@ -99,6 +84,6 @@ STATIC mp_obj_t dht_readinto(mp_obj_t pin_in, mp_obj_t buf_in) {
 
 timeout:
     mp_hal_quiet_timing_exit(irq_state);
-    nlr_raise(mp_obj_new_exception_arg1(&mp_type_OSError, MP_OBJ_NEW_SMALL_INT(MP_ETIMEDOUT)));
+    mp_raise_OSError(MP_ETIMEDOUT);
 }
 MP_DEFINE_CONST_FUN_OBJ_2(dht_readinto_obj, dht_readinto);

@@ -50,8 +50,8 @@ Timer callbacks
 ---------------
 
 The next thing we can do is register a callback function for the timer to
-execute when it triggers (see the [switch tutorial](tut-switch) for an
-introduction to callback functions)::
+execute when it triggers (see the :ref:`switch tutorial <pyboard_tutorial_switch>`
+for an introduction to callback functions)::
 
     >>> tim.callback(lambda t:pyb.LED(1).toggle())
 
@@ -95,7 +95,7 @@ We set up timer 2 as follows::
 
 The prescaler is set at 83, which makes this timer count at 1 MHz.
 This is because the CPU clock, running at 168 MHz, is divided by
-2 and then by prescaler+1, giving a freqency of 168 MHz/2/(83+1)=1 MHz
+2 and then by prescaler+1, giving a frequency of 168 MHz/2/(83+1)=1 MHz
 for timer 2.  The period is set to a large number so that the timer
 can count up to a large number before wrapping back around to zero.
 In this case it will take about 17 minutes before it cycles back to

@@ -16,4 +16,3 @@ try:
     print(next(g))
 except TypeError:
     print("got TypeError from downstream!")
-

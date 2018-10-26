@@ -1,5 +1,5 @@
 /*
- * This file is part of the Micro Python project, http://micropython.org/
+ * This file is part of the MicroPython project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
@@ -35,13 +35,7 @@ void mp_emit_common_get_id_for_load(scope_t *scope, qstr qst) {
     bool added;
     id_info_t *id = scope_find_or_add_id(scope, qst, &added);
     if (added) {
-        id_info_t *id2 = scope_find_local_in_parent(scope, qst);
-        if (id2 != NULL && (id2->kind == ID_INFO_KIND_LOCAL || id2->kind == ID_INFO_KIND_CELL || id2->kind == ID_INFO_KIND_FREE)) {
-            id->kind = ID_INFO_KIND_FREE;
-            scope_close_over_in_parents(scope, qst);
-        } else {
-            id->kind = ID_INFO_KIND_GLOBAL_IMPLICIT;
-        }
+        scope_find_local_and_close_over(scope, id, qst);
     }
 }
 
@@ -50,12 +44,12 @@ void mp_emit_common_get_id_for_modification(scope_t *scope, qstr qst) {
     bool added;
     id_info_t *id = scope_find_or_add_id(scope, qst, &added);
     if (added) {
-        if (scope->kind == SCOPE_MODULE || scope->kind == SCOPE_CLASS) {
-            id->kind = ID_INFO_KIND_GLOBAL_IMPLICIT;
-        } else {
+        if (SCOPE_IS_FUNC_LIKE(scope->kind)) {
             id->kind = ID_INFO_KIND_LOCAL;
+        } else {
+            id->kind = ID_INFO_KIND_GLOBAL_IMPLICIT;
         }
-    } else if (scope->kind >= SCOPE_FUNCTION && scope->kind <= SCOPE_GEN_EXPR && id->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
+    } else if (SCOPE_IS_FUNC_LIKE(scope->kind) && id->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
         // rebind as a local variable
         id->kind = ID_INFO_KIND_LOCAL;
     }
@@ -69,14 +63,14 @@ void mp_emit_common_id_op(emit_t *emit, const mp_emit_method_table_id_ops_t *emi
 
     // call the emit backend with the correct code
     if (id->kind == ID_INFO_KIND_GLOBAL_IMPLICIT) {
-        emit_method_table->name(emit, qst);
+        emit_method_table->global(emit, qst, MP_EMIT_IDOP_GLOBAL_NAME);
     } else if (id->kind == ID_INFO_KIND_GLOBAL_EXPLICIT) {
-        emit_method_table->global(emit, qst);
+        emit_method_table->global(emit, qst, MP_EMIT_IDOP_GLOBAL_GLOBAL);
     } else if (id->kind == ID_INFO_KIND_LOCAL) {
-        emit_method_table->fast(emit, qst, id->local_num);
+        emit_method_table->local(emit, qst, id->local_num, MP_EMIT_IDOP_LOCAL_FAST);
     } else {
         assert(id->kind == ID_INFO_KIND_CELL || id->kind == ID_INFO_KIND_FREE);
-        emit_method_table->deref(emit, qst, id->local_num);
+        emit_method_table->local(emit, qst, id->local_num, MP_EMIT_IDOP_LOCAL_DEREF);
     }
 }
 
