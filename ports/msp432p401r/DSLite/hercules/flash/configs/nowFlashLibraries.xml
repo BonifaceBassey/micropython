@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Libraries> 
+    <Library Name="pf035a.nfl" Version="1.04" Technology="Platform F035"/>
+    <Library Name="pf035a_cortexm3.nfl" Version="1.04" Technology="Platform F035"/>
+    <Library Name="f021_R4_be.nfl" Version="2.06" Technology="F021"/>
+    <Library Name="f021_R4_le.nfl" Version="2.06" Technology="F021"/>
+    <Library Name="f021_R4_be_l2fmc.nfl" Version="2.06" Technology="F021"/>
+    <Library Name="f021_R4_le_l2fmc.nfl" Version="2.06" Technology="F021"/>
+</Libraries>

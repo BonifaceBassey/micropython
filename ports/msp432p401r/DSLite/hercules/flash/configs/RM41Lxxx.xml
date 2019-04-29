@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  -->
+<!--                                                           -->
+<!--              FILE IS OBSOLETE!!!! DO NOT USE !!!!!!       -->
+<!--              FILE IS OBSOLETE!!!! DO NOT USE !!!!!!       -->
+<!-- RM41L232 Device specific information in RM42Lxxx.xml file -->
+<!--                                                           -->
+<!-- register id value set to dummy value to prevent matching  -->
+<!--                                                           -->
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  -->
+<Device  AsicId="0x01010101" DeviceId="0x01010101" Library="f021_R4_le.nfl" CoreType="R4_LittleEndian" useDAP="false" Revision="1" >
+    <Revisions>
+        <Revision RevisionNumber="1"> Initial Revision </Revision>
+    </Revisions>
+    <DefaultPart Name="DO NOT USE">
+        <MinorRevision RevisionNumber="1" Description="RM41L232 Rev A"/>
+        <RegisterId Address="0xf0080148" Value="0xA5A5A5A5" Mask="0xFFFFFFFF"/>
+        <Parameters>
+            <PllFrequency Frequency="80" PllType="fmzpll"/>
+            <MemoryMap>
+                <Flash>
+                    <ProgramFlash    StartAddress="0x00000000" EndAddress="0x0001FFFF" CorrectionStartAddress="0xF0400000" CorrectionEndAddress="0xF0403FFF"/>
+                    <ProgramFlashOtp StartAddress="0xF0000000" EndAddress="0xF00007FF" CorrectionStartAddress="0xF0040000" CorrectionEndAddress="0xF00400FF"/>
+                    <DataFlash    StartAddress="0xF0200000" EndAddress="0xF0203fff" CorrectionStartAddress="0xF0100000" CorrectionEndAddress="0xF01007ff"/>
+                    <DataFlashOtp StartAddress="0xF000E000" EndAddress="0xF000E3ff" CorrectionStartAddress="0xF0041C00" CorrectionEndAddress="0xF0041C7f"/>
+                    <Bank Number="0" Type="Program" ControlRegister="0xfff87000"
+                        StartAddress="0x00000000" EndAddress="0x0001FFFF"
+                        CorrectionStartAddress="0xF0400000" CorrectionEndAddress="0xF0403FFF">
+                        <Sector Number="0" Type="Flash" StartAddress="0x00000000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0400000" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="1" Type="Flash" StartAddress="0x00002000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0400400" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="2" Type="Flash" StartAddress="0x00004000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0400800" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="3" Type="Flash" StartAddress="0x00006000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0400C00" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="4" Type="Flash" StartAddress="0x00008000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0401000" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="5" Type="Flash" StartAddress="0x0000A000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0401400" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="6" Type="Flash" StartAddress="0x0000C000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0401800" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="7" Type="Flash" StartAddress="0x0000E000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0401C00" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="8" Type="Flash" StartAddress="0x00010000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0402000" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="9" Type="Flash" StartAddress="0x00012000" Length="0x00002000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0402400" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="10" Type="Flash" StartAddress="0x00014000" Length="0x00002000">
+                             <Correction Type="FlashEcc" StartAddress="0xF0402800" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="11" Type="Flash" StartAddress="0x00016000" Length="0x00002000">
+                             <Correction Type="FlashEcc" StartAddress="0xF0402C00" Length="0x00000400"/>
+                        </Sector>
+                        <Sector Number="12" Type="Flash" StartAddress="0x00018000" Length="0x00008000">
+                             <Correction Type="FlashEcc" StartAddress="0xF0403000" Length="0x00001000"/>
+                        </Sector>
+                        <Otp Type="Otp" StartAddress="0xF0000000" Length="0x00000800">
+                            <Correction Type="OtpEcc" StartAddress="0xF0040000" Length="0x00000100"/>
+                        </Otp>
+                    </Bank>
+                    <Bank Number="7" Type="Data" ControlRegister="0xfff87000"
+                        StartAddress="0xF0200000" EndAddress="0xF0203fff"
+                        CorrectionStartAddress="0xF0100000" CorrectionEndAddress="0xF01007ff">
+                        <Sector Number="0" Type="Flash" StartAddress="0xF0200000" Length="0x00001000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0100000" Length="0x00000200"/>
+                        </Sector>
+                        <Sector Number="1" Type="Flash" StartAddress="0xF0201000" Length="0x00001000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0100200" Length="0x00000200"/>
+                        </Sector>
+                        <Sector Number="2" Type="Flash" StartAddress="0xF0202000" Length="0x00001000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0100400" Length="0x00000200"/>
+                        </Sector>
+                        <Sector Number="3" Type="Flash" StartAddress="0xF0203000" Length="0x00001000">
+                            <Correction Type="FlashEcc" StartAddress="0xF0100600" Length="0x00000200"/>
+                        </Sector>
+                        <Otp Type="Otp" StartAddress="0xF000E000" Length="0x00000400">
+                            <Correction Type="OtpEcc" StartAddress="0xF0041C00" Length="0x00000080"/>
+                        </Otp>
+                    </Bank>
+                </Flash>
+            </MemoryMap>
+        </Parameters>
+    </DefaultPart>
+    <CommonParameters>
+        <Initialization>
+            <InitRegisters Register="0xfffff538" Value="0x00000005" Comment="reset ESM"/>
+            <InitRegisters Register="0xffffff50" Value="0x00000207" Comment="select clock source 7 for RTICLK (Disable DWD)"/>
+            <InitRegisters Register="0xffffff48" Value="0x00000000" Comment="set GHVSRC to OSCIN clock source"/>
+            <InitRegisters Register="0xffffff34" Value="0x00000002" Comment="disable PLL  Initialization"/>
+            <InitRegisters Register="0xffffffd0" Value="0x01010000" Comment="Disable peripherals"/>
+            <InitRegisters Register="0xffffffd0" Value="0x01010100" Comment="Enable peripherals"/>
+            <InitRegisters Register="0xffffff00" Value="0x00000000" Comment="disable ECLK output"/>
+            <InitRegisters Register="0xfff7A400" Value="0x00000000" Comment="disable HTU"/>
+            <InitRegisters Register="0xffffffc0" Value="0x00000000" Comment="Set RAM wait states to 0"/>
+            <InitRegisters Register="0xfff87000" Value="0x00000211" Comment="enable pipeline mode and RWAIT=1 and Address WS=0"/>
+            <InitRegisters Register="0xfff87288" Value="0x00000005" Comment="enable write to EWAIT register"/>
+            <InitRegisters Register="0xfff872B8" Value="0x00030002" Comment="EWAIT=3"/>
+            <InitRegisters Register="0xfff87008" Value="0x00000005" Comment="disable error correction and detection"/>
+            <InitRegisters Register="0xfff87040" Value="0x0000ffff" Comment="force active mode for all banks"/>
+            <InitRegisters Register="0xffffffc4" Value="0x0000000a" Comment="MEMSW='1010' => Flash at 0x00000000, RAM at 0x08000000)"/>
+            <InitCode>
+                <Code>S00600004844521B</Code>
+                <Code>S325080003007847C04601002DE9300F11EE0204C0E3010080E3300F01EE100F1FEE0500C0E3A6</Code>
+                <Code>S32508000320100F0FEE300F11EE0303C0E3060080E3300F01EE100F1FEE020080E30800C0E3D9</Code>
+                <Code>S31F08000340100F0FEE0000A0E30100BDE81EFF2FE100B5FFF7D5FF002000BDC7</Code>
+                <Code>S705080003509F</Code>
+            </InitCode>
+        </Initialization>
+        <MemoryMap>
+            <Ram>
+                <Ram Type="Ram" StartAddress="0x08000000" Length="0x00008000">
+                    <Correction Type="RamEcc" StartAddress="0x08400000" Length="0x00001000"/>
+                </Ram>
+            </Ram>
+        </MemoryMap>
+		<ProfilingLimits Vt_Min_Limit="24" Vt_Mean_Limit="24.0" Bcc_Min_Limit="10" Bcc_Mean_Limit="10.0"/>
+    </CommonParameters>
+</Device>

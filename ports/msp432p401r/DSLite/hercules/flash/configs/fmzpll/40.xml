@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PllConfig
+    Type="fmzpll" Frequency="40"  MinXtal="5" MaxXtal="20" Step="0.5" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:../../schema/PllConfig.xsd">
+    <Xtal Frequency="5.0"  pllCtl1="0x40017500" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="5.5"  pllCtl1="0x40016900" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="6.0"  pllCtl1="0x40016300" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="6.5"  pllCtl1="0x40028600" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="7.0"  pllCtl1="0x40027F00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="7.5"  pllCtl1="0x40027800" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="8.0"  pllCtl1="0x40026C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="8.5"  pllCtl1="0x40026600" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="9.0"  pllCtl1="0x40026100" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="9.5"  pllCtl1="0x40025C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="10.0" pllCtl1="0x40037500" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="10.5" pllCtl1="0x40036F00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="11.0" pllCtl1="0x40036900" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="11.5" pllCtl1="0x40036900" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="12.0" pllCtl1="0x40036300" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="12.5" pllCtl1="0x40035E00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="13.0" pllCtl1="0x40047000" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="13.5" pllCtl1="0x40046A00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="14.0" pllCtl1="0x40046A00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="14.5" pllCtl1="0x40046400" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="15.0" pllCtl1="0x40046400" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="15.5" pllCtl1="0x40045F00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="16.0" pllCtl1="0x40056C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="16.5" pllCtl1="0x40056C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="17.0" pllCtl1="0x40056600" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="17.5" pllCtl1="0x40056600" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="18.0" pllCtl1="0x40056100" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="18.5" pllCtl1="0x40056100" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="19.0" pllCtl1="0x40055C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="19.5" pllCtl1="0x40055C00" pllCtl2="0x00007E00"/>
+    <Xtal Frequency="20.0" pllCtl1="0x40066600" pllCtl2="0x00007E00"/>
+</PllConfig>

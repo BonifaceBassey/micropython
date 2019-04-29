@@ -1,83 +1,112 @@
-/*
- * -------------------------------------------
- *    MSP432 DriverLib - v2_20_00_08 
- * -------------------------------------------
- *
- * --COPYRIGHT--,BSD,BSD
- * Copyright (c) 2014, Texas Instruments Incorporated
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * *  Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * *  Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * *  Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * --/COPYRIGHT--*/
-/*******************************************************************************
- * MSP432 GPIO - Toggle Output High/Low
- *
- * Description: In this very simple example, the LED on P1.0 is configured as
- * an output using DriverLib's GPIO APIs. An infinite loop is then started
- * which will continuously toggle the GPIO and effectively blink the LED.
- *
- *                MSP432P401
- *             ------------------
- *         /|\|                  |
- *          | |                  |
- *          --|RST         P1.0  |---> P1.0 LED
- *            |                  |
- *            |                  |
- *            |                  |
- *            |                  |
- *
- * Author: Timothy Logan
- ******************************************************************************/
-/* DriverLib Includes */
-#include "driverlib.h"
-
-/* Standard Includes */
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
-#include <stdbool.h>
+#include "py/compile.h"
+#include "py/runtime.h"
+#include "py/repl.h"
+#include "py/gc.h"
+#include "py/mperrno.h"
+#include "lib/utils/pyexec.h"
+#include "include/msp432p401r_uart.h"
+//#include "include/msp432p401r_mphalport.h"
+//#include "readline.h"
+//#include "py/mphal.h"
 
-int main(void)
-{
-    volatile uint32_t i;
-
-    /* Halting the Watchdog */
-    MAP_WDT_A_holdTimer();
-
-    /* Configuring P1.0 as output */
-    MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-
-    while (1)
-    {
-        /* Delay Loop */
-        for(i = 0; i < 10000; i++)
-        {
-        }
-
-        MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+#if MICROPY_ENABLE_COMPILER
+void do_str(const char *src, mp_parse_input_kind_t input_kind) {
+    nlr_buf_t nlr;
+    if (nlr_push(&nlr) == 0) {
+        mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
+        qstr source_name = lex->source_name;
+        mp_parse_tree_t parse_tree = mp_parse(lex, input_kind);
+        mp_obj_t module_fun = mp_compile(&parse_tree, source_name, MP_EMIT_OPT_NONE, true);
+        mp_call_function_0(module_fun);
+        nlr_pop();
+    } else {
+        // uncaught exception
+        mp_obj_print_exception(&mp_plat_print, (mp_obj_t)nlr.ret_val);
     }
 }
+#endif
+
+static char *stack_top;
+#if MICROPY_ENABLE_GC
+static char heap[2*2048];
+#endif
+
+int main(int argc, char **argv) {
+    // init the peripherals
+    uart_init();
+
+    int stack_dummy;
+
+soft_reset:
+
+    stack_top = (char*)&stack_dummy;
+
+    #if MICROPY_ENABLE_GC
+    gc_init(heap, heap + sizeof(heap));
+    #endif
+
+    mp_init();
+
+    #if MICROPY_ENABLE_COMPILER
+        #if MICROPY_REPL_EVENT_DRIVEN
+        pyexec_event_repl_init();
+        for (;;) {
+            int c = mp_hal_stdin_rx_chr();
+            if (pyexec_event_repl_process_char(c)) {
+                break;
+            }
+        }
+        #else
+            pyexec_friendly_repl();
+        #endif
+    #else
+        pyexec_frozen_module("frozentest.py");
+    #endif
+    
+    printf("LaunchPad: soft reboot\n");
+    mp_deinit();
+    goto soft_reset;
+    return 0;
+}
+
+void gc_collect(void) {
+    // WARNING: This gc_collect implementation doesn't try to get root
+    // pointers from CPU registers, and thus may function incorrectly.
+    void *dummy;
+    gc_collect_start();
+    gc_collect_root(&dummy, ((mp_uint_t)stack_top - (mp_uint_t)&dummy) / sizeof(mp_uint_t));
+    gc_collect_end();
+    gc_dump_info();
+}
+
+mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
+    mp_raise_OSError(MP_ENOENT);
+}
+
+mp_import_stat_t mp_import_stat(const char *path) {
+    return MP_IMPORT_STAT_NO_EXIST;
+}
+
+mp_obj_t mp_builtin_open(size_t n_args, const mp_obj_t *args, mp_map_t *kwargs) {
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_KW(mp_builtin_open_obj, 1, mp_builtin_open);
+
+void nlr_jump_fail(void *val) {
+    while (1);
+}
+
+void NORETURN __fatal_error(const char *msg) {
+    while (1);
+}
+
+#ifndef NDEBUG
+void MP_WEAK __assert_func(const char *file, int line, const char *func, const char *expr) {
+    printf("Assertion '%s' failed, at file %s:%d\n", expr, file, line);
+    __fatal_error("Assertion failed");
+}
+#endif

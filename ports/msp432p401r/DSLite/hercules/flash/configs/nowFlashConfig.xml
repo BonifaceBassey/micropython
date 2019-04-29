@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Config [
+<!ENTITY extras SYSTEM "extras.xml">
+]>
+<Config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:../schema/nowFlashConfig.xsd">
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="nowFlashLibraries.xml"/>
+    <Devices>
+        <!-- Hercules Platform F035 devices -->
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS470MF0660x.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS470MF0xx0x.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LSx0xx6s.xml"/>
+        <!-- Hercules RM F021 devices -->
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RM42Lxxx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RM44Lxxx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RM46Lxxx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RM48Lxxx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RM57L8xx.xml"/>
+        <!-- Hercules TMS570 F021 devices -->
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LS0x32.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LS1xxx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LSx1xx.xml"/>
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LS0x14.xml"/>        
+        <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TMS570LC43xx.xml"/>
+    </Devices>
+</Config>
